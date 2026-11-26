@@ -1,0 +1,30 @@
+{
+  "title": "The sharp ex-ante to ex-post gap in Bayesian persuasion",
+  "upload_type": "software",
+  "version": "1.0.0",
+  "publication_date": "2026-11-27",
+  "creators": [
+    {
+      "name": "DannyExperiments"
+    }
+  ],
+  "description": "With m convex constraints and a two-point multiplicative Jensen factor M, the largest ex-ante to ex-post utility ratio is (m+1)/A_(m+1), where A_n is the largest sum of leaf discounts M^(−d) over full binary trees with n leaves. This answers the general tightness question in §5 of Babichenko, Talgam-Cohen and Zabarnyi (AAAI 2021, doi:10.1609/aaai.v35i6.16648).\n\nThe proof splits feasible ex-ante signals into pools of at most m+1 posteriors. Replacing pools by their means retains the prior and bounds sender loss by a symmetrized binary-tree inequality. Coordinate caps and a discounted tree utility attain the bound. The source gave the one-constraint optimum and the m+1 lower bound at M=2. The tree optimization uses exponential prefix coding. The contribution is the matching persuasion factor for general m and M.\n\nSmoothing gives the same sharp supremum for Lipschitz utilities. The exact replay checks 80 tree values, 500 two-point inequalities, five four-state gaps and one smoothing value. The explorer compares feasible signals. The scope is finite-state posterior-utility persuasion with convex continuous caps. External peer review and formal verification are pending.\n\nUnder human direction, ChatGPT Astra 6.2 (OpenAI) generated the discovery proof, Lipschitz supplement and original replay packet. OpenAI Codex reviewed the mathematics and revised the manuscript. GPT-6.2 Sol checked the original problem and coding overlap, prepared the finite replay and worked visual example, and assembled the release. DannyExperiments maintains the repository and is the preferred citation identity. No AI system is proposed as an author.",
+  "keywords": [
+    "Bayesian persuasion",
+    "information design",
+    "convex constraints",
+    "Jensen inequality",
+    "prefix coding",
+    "Lipschitz approximation"
+  ],
+  "access_right": "open",
+  "license": "other-closed",
+  "notes": "All rights reserved. Publicly downloadable files are supplied without a repository-wide reuse license.",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DannyExperiments/sharp-ex-ante-ex-post-persuasion/releases/tag/v1.0.0",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+\documentclass[11pt,a4paper]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.88in]{geometry}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={The sharp ex-ante to ex-post gap in Bayesian persuasion}}
+\DeclareMathSizes{8}{8}{8}{8}
+\DeclareMathSizes{9}{9}{8}{8}
+\DeclareMathSizes{10.95}{10.95}{8}{8}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\title{The sharp ex-ante to ex-post gap in Bayesian persuasion}
+\date{November 27, 2026}
+
+\begin{document}
+\begin{abstract}
+With \(m\) convex constraints and a sender utility satisfying a two-point Jensen inequality with multiplicative factor \(M\), we determine the exact worst-case loss from enforcing the constraints on every posterior instead of in expectation. The factor is \((m+1)/A_{m+1}\), where \(A_n\) is the maximum sum of discounted leaf weights \(M^{-d}\) over full binary trees on \(n\) leaves. This closes the general tightness question of Babichenko, Talgam-Cohen and Zabarnyi. The same factor is the sharp supremum for Lipschitz utilities.
+\end{abstract}
+\maketitle
+
+\section{Formulation and result}
+
+Let \(\Delta\) be the probability simplex of a finite state space. A signal is represented by a probability law of posteriors \(P\in\Delta\) with mean equal to its prior \(p_0\). Let \(u:\Delta\to[0,\infty)\) be finite-valued and upper semicontinuous. For \(M\ge1\), assume
+\begin{equation}\label{eq:jensen}
+ \lambda u(p)+(1-\lambda)u(q)
+ \le M u(\lambda p+(1-\lambda)q)
+ \quad (p,q\in\Delta,\ 0\le\lambda\le1).
+\end{equation}
+With continuous convex functions \(f_j\) and caps \(c_j\), \(1\le j\le m\), the ex-ante requirements are \(\mathbb E f_j(P)\le c_j\). The ex-post requirements are \(f_j(P)\le c_j\) almost surely. For feasible ex-ante data, the uninformative signal \(P=p_0\) is ex-post feasible by convexity. Write \(V_{\rm ante},V_{\rm post}\) for the two suprema of \(\mathbb E u(P)\).
+
+Babichenko, Talgam-Cohen and Zabarnyi prove a universal factor \(M^m\) by sequential pooling and ask about the sharp bound \cite[Thm.~5.3]{btz}. They give exact sharpness for one constraint. At \(M=2\) their longer version gives an actual gap of \(m+1\), and separately shows tightness of the sequential algorithm's \(2^m\) analysis \cite[Prop.~5.5]{btzlong}. We retain the same posterior-utility assumptions.
+
+Set \(n=m+1\), \(\beta=1/M\), and define \(A_1=1\) and
+\[
+ A_s=\beta\max_{1\le i<s}(A_i+A_{s-i})\quad(s\ge2).
+\]
+By splitting at the root, \(A_s\) is the largest value of \(\sum_i\beta^{d_i}\) for a full binary tree with \(s\) leaves of depths \(d_i\).
+
+\begin{theorem}\label{thm:main}
+The least universal factor in \(V_{\rm ante}\le C V_{\rm post}\) is \(C=n/A_n\). For unrestricted upper semicontinuous utilities equality is attained with \(n\) states and linear caps, with \(V_{\rm post}>0\).
+\end{theorem}
+
+\section{The upper bound}
+
+Take a full tree with leaf depths \(d_i\). For weights \(w_i\ge0\) summing to one, repeated use of \eqref{eq:jensen} yields
+\[
+ u\left(\sum_i w_i p_i\right)\ge \sum_i w_i\beta^{d_i}u(p_i).
+\]
+At each split use the two child masses as relative weights. A zero-mass subtree contributes zero, and a node with just one positive child can incur the factor \(\beta\) because \(u\ge0\). Take a maximizing \(n\)-leaf tree. Pad any mixture of at most \(n\) posteriors with zero weights. Average the inequality over all assignments of these weighted posteriors to the leaves. Each weighted term then has mean discount \(A_n/n\). Thus
+\begin{equation}\label{eq:avg}
+ u\left(\sum_i w_i p_i\right)\ge \frac{A_n}{n}\sum_i w_i u(p_i)
+ \quad\text{for mixtures of at most \(n\) points}.
+\end{equation}
+
+It suffices to begin with a finite scheme. Indeed, the set of vectors
+\[
+ \bigl\{(p,f_1(p),\ldots,f_m(p),z):p\in\Delta,\ 0\le z\le u(p)\bigr\}
+\]
+is compact by upper semicontinuity and continuity of the \(f_j\). Its convex hull is compact by Carath\'eodory's theorem. The expectation vector of any scheme belongs to this hull. Represent it by a finite combination and raise every represented \(z\) to \(u(p)\). This preserves its prior and constraint moments and does not decrease its utility. Related finite-support reductions for constrained persuasion are in \cite{ds,btzlong}.
+
+For such a scheme, with posteriors \(p_i\) and original weights \(w_i\), consider the polytope
+\[
+ \mathcal P=\left\{v\ge0:\sum_i v_i=1,\
+                    \sum_i v_i f_j(p_i)\le c_j\ (1\le j\le m)\right\}.
+\]
+The prior equation is absent from this auxiliary polytope. An extreme point has at most \(m+1\) positive coordinates. On larger support there is a nonzero perturbation preserving normalization and all \(m\) constraint moments, so sufficiently small perturbations in both signs remain feasible. This is the elementary finite support argument for moment sets \cite{winkler}.
+
+Express \(w\) as a convex combination of extreme points \(v\) and replace each such weight vector by the single posterior \(\sum_i v_i p_i\), using the same combination probabilities. The resulting scheme has mean \(p_0\), and each posterior satisfies all caps by convexity. Inequality~\eqref{eq:avg} gives utility at least \(A_n/n\) times the original value. Take suprema. In particular this proves the claimed inequality even when \(V_{\rm post}=0\).
+
+\section{An extremal utility}
+
+Use \(n\) states, the uniform prior, and \(f_j(p)=p_j\), \(c_j=1/n\) for \(1\le j\le n-1\). These caps hold automatically in expectation. Enforcing them on each posterior with the same mean forces each of the first \(n-1\) coordinates to equal \(1/n\) almost surely. Thus the ex-post scheme uses just the prior. This constraint construction is already present at \(M=2\) in \cite[Prop.~5.5 and App.~E]{btzlong}.
+
+Define \(u_\beta(p)\) as the maximum of \(\sum_i p_i\beta^{d_i}\) over full binary trees with leaves bijectively labeled by the positive coordinates of \(p\). This is the finite discounted prefix-code objective \cite{baer,parker}. It lies in \([0,1]\) and equals one at each state vertex. To see upper semicontinuity, along any convergent sequence choose a subsequence that realizes the limsup with one fixed support and one fixed maximizing tree. At the limit remove zero-weight leaves and contract vertices with only one child. Retained depths can only decrease, so the limit value is bounded above by the value of an allowed tree at the limit.
+
+For a mixture of two posteriors of positive relative weights, join their maximizing trees under a new root. The value with duplicate labels is exactly \(\beta\) times the weighted mean of their values. For every duplicate label, transfer its full combined mass to the shallower occurrence. Remove the redundant leaves and contract vertices with only one child. Since \(\beta\le1\), these operations cannot decrease the value. They yield an admissible tree for the mixture, proving \eqref{eq:jensen} for \(u_\beta\).
+
+Full revelation attains ex-ante value one. The ex-post prior gives value \(A_n/n\), establishing sharpness in Theorem~\ref{thm:main}.
+
+The posterior utility can also be implemented by a compact receiver action set \(\Delta\). Give receiver payoff \(2a_i-\|a\|_2^2\) for action \(a\) in state \(i\). The unique best response to \(p\) maximizes \(\|p\|_2^2-\|a-p\|_2^2\), so it is \(a=p\). The state-independent sender payoff \(u_\beta(a)\) then implements the required utility.
+
+\section{Closed forms for the tree value}
+
+The discounted tree problem has the standard exponential prefix-code extremizers \cite{baer,parker}. We give the uniform formulas and their short derivations.
+
+For \(1\le M\le2\), set \(k=\lfloor\log_2 n\rfloor\). Then
+\[
+ A_n=(2^{k+1}-n)\beta^k+(2n-2^{k+1})\beta^{k+1}.
+\]
+For \(1<M<2\), if the shallowest leaf has depth \(a\) and a deepest sibling pair has depth \(b\ge a+2\), expand the former to two leaves and collapse the latter to one. The change is
+\[
+ (2\beta-1)\bigl(\beta^a-\beta^{b-1}\bigr)>0.
+\]
+Hence an optimal tree has leaf depths within one level of one another. The leaf count and Kraft equality give the formula. At \(\beta=1\) the value is \(n\), and at \(\beta=1/2\) it is one by Kraft equality.
+
+For \(M>2\) the optimum is the comb, with \(A_1=1\) and
+\[
+ A_n=\sum_{j=1}^{n-2}\beta^j+2\beta^{n-1}\quad(n\ge2).
+\]
+The displayed candidate sequence has first differences \(A_s-A_{s-1}=\beta^{s-2}(2\beta-1)\) for \(s\ge2\). These are increasing when \(\beta<1/2\). By discrete convexity the candidate split sum \(A_i+A_{n-i}\) is maximized at \(i=1\) or \(i=n-1\). Substituting the formula in the recurrence proves it by induction.
+
+In particular the factor is \(m+1\) at \(M=2\) and is \(M\) at \(m=1\). With four states and \(M=3\), the optimal depths are \(1,2,3,3\). Then \(A_4=14/27\), the ex-post value at the uniform prior is \(7/54\), and the gap is \(54/7\).
+
+\section{Lipschitz utilities}
+
+\begin{corollary}\label{cor:lip}
+Over Lipschitz utilities satisfying \eqref{eq:jensen}, the supremum of the gap is also \(n/A_n\).
+\end{corollary}
+
+\begin{proof}
+Use \(u_\beta\) from the extremal example. With the infinity norm, set
+\[
+ U_r(x)=\max_{\|z-x\|_\infty\le r,\ z\in\Delta}u_\beta(z),
+ \qquad
+ V_\varepsilon(x)=\frac1\varepsilon\int_0^\varepsilon U_r(x)\,dr.
+\]
+The maximum exists and the integrand is bounded and monotone in \(r\). A convex combination of two maximizing points for radius \(r\) stays within radius \(r\) of the corresponding combination of their centers. Thus \(U_r\) satisfies \eqref{eq:jensen} with the same \(M\), and so does \(V_\varepsilon\). For \(d=\|x-y\|_\infty\), ball inclusion gives \(U_r(x)\le U_{r+d}(y)\). Shifting the radius integral increases it by at most \(d\), since \(0\le U_r\le1\). Reversing \(x,y\) proves the Lipschitz constant \(1/\varepsilon\).
+
+The smoothing still takes value one at every state vertex. For \(0<\varepsilon<1/n\), all points in the radius-\(\varepsilon\) ball of the prior have full support. The coefficient sum of any tree form is at most \(A_n\). Therefore \(U_r(p_0)\le A_n/n+A_n r\) for \(0\le r\le\varepsilon\), and \(V_\varepsilon(p_0)\le A_n/n+A_n\varepsilon/2\). Under the same coordinate caps the actual gap is at least
+\[
+ \frac{n/A_n}{1+n\varepsilon/2}.
+\]
+Let \(\varepsilon\) decrease to zero and apply the universal upper bound.
+\end{proof}
+
+\section*{Research disclosure}
+
+\begingroup\hyphenpenalty=10000\exhyphenpenalty=10000\emergencystretch=1em\relax
+Under human direction, ChatGPT Astra 6.2 (OpenAI) generated the discovery proof, Lipschitz supplement and original replay packet. OpenAI Codex reviewed the mathematics and revised the manuscript. GPT-6.2 Sol checked the original problem and coding overlap, prepared the finite replay and worked visual example, and assembled the release. DannyExperiments maintains the repository and is the preferred citation identity. No AI system is proposed as an author.
+\par\endgroup
+
+\begin{thebibliography}{9}
+\bibitem{btz}
+Y. Babichenko, I. Talgam-Cohen, and K. Zabarnyi, \emph{Bayesian persuasion under ex ante and ex post constraints}, Proceedings of AAAI \textbf{35} (2021), no.~6, 5127--5134. \href{https://doi.org/10.1609/aaai.v35i6.16648}{DOI: 10.1609/aaai.v35i6.16648}.
+\bibitem{btzlong}
+Y. Babichenko, I. Talgam-Cohen, and K. Zabarnyi, \emph{Bayesian persuasion under ex ante and ex post constraints}, longer version, \href{https://arxiv.org/html/2012.03272v2}{arXiv:2012.03272v2}, 2021.
+\bibitem{ds}
+L. Doval and V. Skreta, \emph{Constrained information design}, \href{https://arxiv.org/abs/1811.03588}{arXiv:1811.03588}.
+\bibitem{winkler}
+G. Winkler, \emph{Extreme points of moment sets}, Math. Oper. Res. \textbf{13} (1988), 581--587. \href{https://doi.org/10.1287/moor.13.4.581}{doi:10.1287/moor.13.4.581}.
+\bibitem{baer}
+M. B. Baer, \emph{Optimal prefix codes for infinite alphabets with nonlinear costs}, \href{https://arxiv.org/abs/cs/0511003}{arXiv:cs/0511003}, \S II.
+\bibitem{parker}
+D. S. Parker, \emph{Conditions for optimality of the Huffman algorithm}, SIAM J. Comput. \textbf{9} (1980), 470--489. \href{https://doi.org/10.1137/0209035}{DOI: 10.1137/0209035}.
+\end{thebibliography}
+\end{document}

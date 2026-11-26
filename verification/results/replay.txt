@@ -1,0 +1,3 @@
+80 exact closed-form comparisons and 500 exact two-point inequalities
+Five exact tetrahedron gaps: 1, 9/4, 4, 54/7, 128/11
+Smoothed center for M=3, epsilon=1/16: 61/432

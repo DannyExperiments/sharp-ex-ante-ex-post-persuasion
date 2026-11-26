@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The four-state persuasion gap</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #101d33; color: #f5f7fd; font: 17px/1.5 system-ui, sans-serif; color-scheme: dark; }
+  main { max-width: 60rem; margin: auto; padding: clamp(1rem, 4vw, 2.4rem); }
+  h1 { font-size: clamp(1.8rem, 5.7vw, 3.15rem); line-height: 1.12; margin: 0 0 .65rem; letter-spacing: -.035em; }
+  h2 { font-size: 1.15rem; margin: 0 0 .5rem; }
+  p { margin: 0 0 .8rem; color: #cbd8ef; }
+  .layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 1rem; margin: 1.2rem 0; }
+  .card { border: 1px solid #395272; border-radius: 1rem; padding: 1rem; background: #182a46; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: .15rem 0 .8rem; }
+  button, select { background: #213956; border: 1px solid #6d88ac; color: #f5f7fd; border-radius: .55rem; font: inherit; min-height: 44px; padding: .35rem .7rem; }
+  button[aria-pressed="true"] { background: #a1eee5; color: #102738; border-color: #a1eee5; }
+  :focus-visible { outline: 3px solid #ffca79; outline-offset: 3px; }
+  canvas { display: block; width: 100%; height: clamp(240px, 46vw, 370px); touch-action: pan-y; background: #101d33; border-radius: .7rem; }
+  input { accent-color: #a1eee5; min-height: 34px; margin: 0; width: 100%; }
+  .camera { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .65rem; margin-top: .7rem; }
+  .caption { margin: .45rem 0 0; min-height: 3.2em; }
+  dl { margin: .9rem 0; }
+  dl > div { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .3rem .8rem; padding: .4rem 0; }
+  dt { color: #cbd8ef; }
+  dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .total { border-top: 1px solid #526d8f; margin-top: .45rem; font-size: 1.3rem; }
+  .ante { color: #a1eee5; }
+  .post { color: #ffca79; }
+  .trees { border-top: 1px solid #526d8f; padding-top: .7rem; }
+  .trees p { margin: .3rem 0; }
+  details { margin-top: 1.1rem; }
+  summary { font-weight: 700; cursor: pointer; min-height: 44px; }
+  @media (max-width: 700px) { .layout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+<h1>The four-state persuasion gap</h1>
+<p>Each point in the tetrahedron is a posterior belief. The four vertices reveal a state, and the center is the uniform prior.</p>
+<div class="layout">
+  <section class="card" aria-labelledby="signals">
+    <h2 id="signals">Feasible signals</h2>
+    <div class="controls" role="group" aria-label="Constraint rule">
+      <button type="button" id="ante" aria-pressed="true">Ex ante</button>
+      <button type="button" id="post" aria-pressed="false">Ex post</button>
+    </div>
+    <canvas id="beliefs" role="img" aria-label="Rotatable tetrahedron of four pure states and the uniform prior">The vertices e1 to e4 represent the pure states. The center represents the uniform distribution.</canvas>
+    <div class="camera"><label for="angle">Rotate</label><input id="angle" type="range" min="0" max="360" value="34" step="1"></div>
+    <p id="rule" class="caption" aria-live="polite"></p>
+  </section>
+  <section class="card" aria-labelledby="cost">
+    <h2 id="cost">Utility and gap</h2>
+    <div class="controls">
+      <label for="factor">Jensen factor M</label>
+      <select id="factor">
+        <option value="1/1">1</option><option value="2/3">3/2</option>
+        <option value="1/2">2</option><option value="1/3" selected>3</option>
+        <option value="1/4">4</option>
+      </select>
+    </div>
+    <div aria-live="polite">
+      <dl>
+        <div><dt>Ex ante optimum</dt><dd class="ante">1</dd></div>
+        <div><dt>Ex post optimum</dt><dd class="post" id="value"></dd></div>
+        <div class="total"><dt>Gap</dt><dd id="gap"></dd></div>
+      </dl>
+      <div class="trees">
+        <p>Balanced tree (2, 2, 2, 2) · <strong id="balanced"></strong></p>
+        <p>Comb tree (1, 2, 3, 3) · <strong id="comb"></strong></p>
+        <p id="winner"></p>
+      </div>
+    </div>
+  </section>
+</div>
+<details>
+  <summary>Why the caps force the center</summary>
+  <p>The first three coordinates must average ¼. Ex ante the caps apply to those averages, so revealing each state with probability ¼ is feasible. Ex post each of those coordinates is at most ¼ on every posterior. Since each still averages ¼, all three equal ¼ almost surely. The fourth is then ¼ as well.</p>
+  <p>At the center the utility is the maximum of the two tree scores. Each depth d contributes (1/M)<sup>d</sup>/4. The balanced tree has the higher score for 1 &lt; M &lt; 2, and the comb has the higher score for M &gt; 2. At M = 1 or 2 they tie.</p>
+</details>
+</main>
+<script>
+"use strict";
+const byId = id => document.getElementById(id);
+const canvas = byId("beliefs");
+const ctx = canvas.getContext("2d");
+const angle = byId("angle");
+const factor = byId("factor");
+const vertices = [[1,1,1], [1,-1,-1], [-1,1,-1], [-1,-1,1]];
+let rule = "ante";
+let dragX = null;
+
+function fraction(n, d) {
+  let a = n, b = d;
+  while (b) [a, b] = [b, a % b];
+  return d === a ? String(n / a) : `${n / a}/${d / a}`;
+}
+
+function displayValues() {
+  const [a, b] = factor.value.split("/").map(Number);
+  const denominator = 4*b**3;
+  const balanced = 4*a**2*b;
+  const comb = a*b**2 + a**2*b + 2*a**3;
+  const optimum = Math.max(balanced, comb);
+  byId("balanced").textContent = fraction(balanced, denominator);
+  byId("comb").textContent = fraction(comb, denominator);
+  byId("value").textContent = fraction(optimum, denominator);
+  byId("gap").textContent = fraction(denominator, optimum);
+  byId("winner").textContent = balanced === comb ? "Both trees tie." :
+    balanced > comb ? "The balanced tree gives the higher utility." : "The comb gives the higher utility.";
+}
+
+function drawBeliefs() {
+  const {width, height} = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.round(width*dpr);
+  canvas.height = Math.round(height*dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const theta = Number(angle.value) * Math.PI/180;
+  const tilt = 0.24 + 0.16*Math.sin(theta + Math.PI/3);
+  const scale = Math.min(width, height) * 1.12;
+  const origin = [width/2, height/2];
+  const points = vertices.map(([x,y,z], index) => {
+    const turnedX = x*Math.cos(theta) + z*Math.sin(theta);
+    const turnedZ = z*Math.cos(theta) - x*Math.sin(theta);
+    const turnedY = y*Math.cos(tilt) - turnedZ*Math.sin(tilt);
+    const depth = y*Math.sin(tilt) + turnedZ*Math.cos(tilt);
+    const zoom = scale/(5.2 - depth);
+    return {x:origin[0]+turnedX*zoom, y:origin[1]-turnedY*zoom, depth, name:`e${index+1}`};
+  });
+  for (let i=0; i<points.length; i++) {
+    for (let j=i+1; j<points.length; j++) {
+      const start=points[i], end=points[j];
+      ctx.strokeStyle = start.depth + end.depth < 0 ? "#3d5e7b" : "#627d9f";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(end.x, end.y);
+      ctx.stroke();
+    }
+  }
+  points.push({x:origin[0], y:origin[1], depth:0, name:""});
+  points.sort((a,b) => a.depth-b.depth);
+  ctx.font = "700 14px system-ui, sans-serif";
+  ctx.textBaseline = "middle";
+  for (const point of points) {
+    const isState = Boolean(point.name);
+    const focused = isState ? rule === "ante" : rule === "post";
+    ctx.fillStyle = focused ? (isState ? "#a1eee5" : "#ffca79") : "#6d849f";
+    ctx.strokeStyle = "#101d33";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, focused ? 8 : 5, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    if (!isState) continue;
+    const right = point.x > origin[0];
+    ctx.textAlign = right ? "left" : "right";
+    ctx.fillStyle = "#f5f7fd";
+    ctx.lineWidth = 4;
+    const labelX = point.x + (right ? 12 : -12);
+    ctx.strokeText(point.name, labelX, point.y);
+    ctx.fillText(point.name, labelX, point.y);
+  }
+}
+
+function setRule(next) {
+  rule = next;
+  byId("ante").setAttribute("aria-pressed", String(rule === "ante"));
+  byId("post").setAttribute("aria-pressed", String(rule === "post"));
+  byId("rule").textContent = rule === "ante"
+    ? "Full revelation uses each of the four highlighted vertices with probability ¼."
+    : "The caps and Bayes plausibility force every posterior to the highlighted center.";
+  canvas.setAttribute("aria-label", rule === "ante"
+    ? "Tetrahedron with its four pure-state vertices highlighted."
+    : "Tetrahedron with its uniform-prior center highlighted.");
+  drawBeliefs();
+}
+
+byId("ante").addEventListener("click", () => setRule("ante"));
+byId("post").addEventListener("click", () => setRule("post"));
+factor.addEventListener("change", displayValues);
+angle.addEventListener("input", drawBeliefs);
+canvas.addEventListener("pointerdown", event => {
+  dragX = event.clientX;
+  canvas.setPointerCapture(event.pointerId);
+});
+canvas.addEventListener("pointermove", event => {
+  if (dragX === null) return;
+  const turn = Math.round(Number(angle.value) + 1.2*(event.clientX - dragX));
+  angle.value = (turn % 360 + 360) % 360;
+  dragX = event.clientX;
+  drawBeliefs();
+});
+for (const event of ["pointerup", "pointercancel", "lostpointercapture"]) {
+  canvas.addEventListener(event, () => { dragX = null; });
+}
+new ResizeObserver(drawBeliefs).observe(canvas);
+displayValues();
+setRule("ante");
+</script>
+</body>
+</html>

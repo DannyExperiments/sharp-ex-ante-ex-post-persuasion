@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "Cite this version of the research release."
+title: "The sharp ex-ante to ex-post gap in Bayesian persuasion"
+authors:
+  - name: "DannyExperiments"
+type: software
+version: "1.0.0"
+date-released: 2026-11-27
+repository-code: "https://github.com/DannyExperiments/sharp-ex-ante-ex-post-persuasion"
+keywords:
+  - "Bayesian persuasion"
+  - "information design"
+  - "convex constraints"
+  - "Jensen inequality"
+  - "prefix coding"
+  - "Lipschitz approximation"
+doi: "10.5281/zenodo.24571504"
+url: "https://doi.org/10.5281/zenodo.24571504"
+preferred-citation:
+  type: software
+  title: "The sharp ex-ante to ex-post gap in Bayesian persuasion"
+  authors:
+    - name: "DannyExperiments"
+  version: "1.0.0"
+  date-released: 2026-11-27
+  doi: "10.5281/zenodo.24571504"
+  url: "https://doi.org/10.5281/zenodo.24571504"
+  repository-code: "https://github.com/DannyExperiments/sharp-ex-ante-ex-post-persuasion"
